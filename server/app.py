@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_restful import Resource, Api
 
 app = Flask(__name__)
@@ -14,12 +14,29 @@ class Items(Resource):
     def get(self):
         return fakeDatabase
     
+    def post(self):
+        data = request.json
+        itemId = len(fakeDatabase.keys()) + 1
+        fakeDatabase[itemId] = {'name':data['name']}
+        return fakeDatabase
+    
 api.add_resource(Items, '/items')
 
 class Item(Resource):
     def get(self, id):
         item = fakeDatabase[id]
         return item
+    
+    def patch(self, id):
+        data = request.json
+        item = fakeDatabase[id]
+        item['name'] = data['name']
+        return fakeDatabase
+
+    def delete(self, id):
+        del fakeDatabase[id]
+        return fakeDatabase
+
 
 api.add_resource(Item, '/items/<int:id>')
 
